@@ -68,7 +68,7 @@ class EmptyClass(Generic[Ord]):
         raise AttributeError("No right on an empty heap")
 
 
-# This is the one and only empty heap
+# This is the one and only empty heap; praise the heap
 Empty = EmptyClass()
 
 
@@ -93,7 +93,7 @@ HeapNode = Union[InnerNode[Ord], EmptyClass]
 # The actual functionality
 def merge(left: HeapNode[Ord], right: HeapNode[Ord]) -> HeapNode[Ord]:
     """Merge two heaps into one."""
-    # FIXME: The merge doesn't restore the leftst property if it is
+    # FIXME: The merge doesn't restore the leftist property if it is
     # violated. You need to fix that.
     return right \
         if left is Empty \
@@ -101,7 +101,7 @@ def merge(left: HeapNode[Ord], right: HeapNode[Ord]) -> HeapNode[Ord]:
         if right is Empty \
         else InnerNode(left.value, left.left, merge(left.right, right)) \
         if left.value < right.value \
-        else InnerNode(right.value, right.left, merge(left, right.right))
+        else restore(InnerNode(right.value, right.left, merge(left, right.right)))
 
 
 def restore(n: HeapNode[Ord]) -> HeapNode[Ord]:
@@ -112,7 +112,9 @@ def restore(n: HeapNode[Ord]) -> HeapNode[Ord]:
     when n is an inner node (n is not Empty).
     """
     # FIXME: you need to implement this
-    ...
+    if n.left.rank < n.right.rank:
+        n.left, n.right = n.right, n.left
+    return n
 
 
 class Heap(Generic[Ord]):
